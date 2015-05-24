@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Index</title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td>Your</td>
+                <td>Opponent</td>
+            </tr>
+            <tr>
+                <td><canvas id="gameBoard" height="{{ board_size }}" width="{{ board_size }}" style="border: 1px solid black;"></canvas></td>
+                <td><canvas id="opponentBoard" height="{{ board_size }}" width="{{ board_size }}" style="border: 1px solid black;"></canvas></td>
+            </tr>
+        </table>
+        <div id="infoSpace">Place {{ number_of_ships }} ships</div>
+        {% if join_link %}
+        <div>Send link to the second player: 
+            <a href="{{ join_link}}">{{ join_link }}</a>
+        </div>
+        {% end %}
+        <script src="//127.0.0.1:9999/static/main.js"></script>
+        <script>
+            var game;
+            var settings = {
+                "wsAddress": "{{ socket }}", 
+                "cellCount": {{ settings.NUMBER_OF_CELLS }},
+                "clickAction": "{{ resources.CLICK_ACTION }}", 
+                "paintAction": "{{ resources.PAINT_ACTION }}",
+                "setTextAction": "{{ resources.SET_TEXT_ACTION }}",
+                "myBoardAction": "{{ resources.MY_BOARD }}",
+                "opponentBoardAction": "{{ resources.OPPONENT_BOARD }}"
+            }
+            window.onload = function() {
+                game = new gameEngine("gameBoard", "opponentBoard", "infoSpace", settings);
+            };
+        </script>
+    </body>
+</html>
