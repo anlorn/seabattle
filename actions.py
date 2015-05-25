@@ -1,7 +1,7 @@
 """
 Contains various actions which can be sent through websocket
 """
-import resources
+from seabattle import resources
 
 
 def paint_cell(board, color, col, row):

@@ -1,4 +1,4 @@
-import player
+from seabattle import player
 
 
 class GameSession:

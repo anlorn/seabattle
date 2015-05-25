@@ -1,12 +1,17 @@
 import random
 import hashlib
 
-import game
+from seabattle import game
 
 games = {}
 
 
 def new_game():
+    """
+    Creates new game and returns id for this game
+
+    :rtype: `str`
+    """
     while True:
         game_id = hashlib.md5(
             str(random.random()).encode()
@@ -18,8 +23,14 @@ def new_game():
 
 
 def del_game(game_id):
+    """
+    :type game_id: `str`
+    """
     games.pop(game_id, None)
 
 
 def get_game(game_id):
-    return games.get(game_id, None)
+    """
+    :rtype: `str` returns game with passed id or None if game doesn't exist
+    """
+    return games.get(game_id, None)

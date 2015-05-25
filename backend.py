@@ -6,12 +6,14 @@ import tornado.websocket
 import tornado.autoreload
 import tornado.httpserver
 
-import games
+from seabattle import games
+from seabattle import actions
+from seabattle import resources
+
 if len(sys.argv) == 2 and sys.argv[1] == "debug":
-    import settings_dev as settings
+    from seabattle import settings_dev as settings
 else:
-    import settings
-import resources
+    from seabattle import settings
 
 
 class Application(tornado.web.Application):
@@ -52,6 +54,7 @@ class IndexPageHandler(tornado.web.RequestHandler):
         macroses = {
             "socket": websocket_url,
             "join_link": join_link,
+            "static_prefix": settings.STATIC_PREFIX,
             "settings": settings,
             "resources": resources,
             "board_size": settings.BOARD_SIZE,
@@ -61,11 +64,29 @@ class IndexPageHandler(tornado.web.RequestHandler):
 
 
 class GameHandler(tornado.websocket.WebSocketHandler):
+    """
+    Provides game logic
+    """
+
+    player = None  # seabattle.player.Player
+    game_id = None  # str
 
     def open(self, game_id):
         game = games.get_game(game_id)
-        self.player = game.new_player(self.to_client, self.end_connection)
-        self.game_id = game_id
+
+        # if we didn't find game with such id
+        if game is None:
+            self.to_client(actions.set_text(resources.SESSION_EXPIRED))
+            self.end_connection()
+        else:
+            # if game can't create new player
+            # TODO it's better to use exceptions here
+            self.player = game.new_player(self.to_client, self.end_connection)
+            if self.player is None:
+                self.to_client(actions.set_text(resources.GAME_IS_FULL))
+                self.end_connection()
+            else:
+                self.game_id = game_id
 
     def on_message(self, data):
         self.player.from_client(json.loads(data))

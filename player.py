@@ -1,6 +1,6 @@
-import resources
-import settings
-import actions
+from seabattle import resources
+from seabattle import settings
+from seabattle import actions
 
 
 class Player:
@@ -74,15 +74,15 @@ class Player:
         :rtype: `bool` returns True if my ship was hit. Otherwise returns
         False.
         """
-        if (col, row) in self._ships:
+        if (col, row) in self._ships:  # enemy hit my ship
             color = resources.MY_DESTOYED_SHIP
             self._ships.remove((col, row,))
-            result = True
-        else:
+            hit = True
+        else:  # enemy miss
             color = resources.MY_MISS
-            result = False
+            hit = False
         self._to_client_func(actions.paint_cell(resources.MY_BOARD, color, col, row))
-        return result
+        return hit
 
     def my_miss(self, col, row):
         """
@@ -129,14 +129,12 @@ class Player:
         Callback when you're a winner
         """
         self._to_client_func(actions.set_text(resources.WIN))
-        #self.disconnect()
 
     def lost(self):
         """
         Callback when you has been destroyed
         """
         self._to_client_func(actions.set_text(resources.LOST))
-        #self.disconnect()
 
     def error_other_player_leave(self):
         """
